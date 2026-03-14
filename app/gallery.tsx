@@ -12,7 +12,7 @@ import {
 import Controls from "./controls";
 import Modal from "./modal";
 
-import { User } from "./types/user";
+import { User, SortField, SortDirection } from "./types/user";
 
 export type GalleryProps = {
   users: User[];
@@ -36,11 +36,41 @@ const Gallery = ({ users }: GalleryProps) => {
     setIsModalOpen(false);
   };
 
+  const handleSort = ({
+    field,
+    direction,
+  }: {
+    field: SortField;
+    direction: SortDirection;
+  }) => {
+    const sorted = [...usersList].sort((a: User, b: User) => {
+      let aValue: string = "";
+      let bValue: string = "";
+
+      if (field === "company") {
+        aValue = a.company.name;
+        bValue = b.company.name;
+      } else if (field === "name" || field === "email") {
+        aValue = a[field as keyof User] as string;
+        bValue = b[field as keyof User] as string;
+      }
+
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+
+      return direction === "ascending"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    });
+
+    setUsersList(sorted);
+  };
+
   return (
     <div className="user-gallery">
       <div className="heading">
         <h1 className="title">Users</h1>
-        <Controls />
+        <Controls onSort={handleSort} />
       </div>
       <div className="items">
         {usersList.map((user, index) => (
