@@ -15,8 +15,10 @@ import { User } from "./types/user";
 
 export type GalleryProps = {
   users: User[];
+  setup: string;
+  punchline: string;
 };
-const Gallery = ({ users }: GalleryProps) => {
+const Gallery = ({ users, setup, punchline }: GalleryProps) => {
   const [usersList, setUsersList] = useState(users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +26,7 @@ const Gallery = ({ users }: GalleryProps) => {
   const handleModalOpen = (id: number) => {
     const user = usersList.find((item) => item.id === id) || null;
 
-    if(user) {
+    if (user) {
       setSelectedUser(user);
       setIsModalOpen(true);
     }
@@ -37,6 +39,9 @@ const Gallery = ({ users }: GalleryProps) => {
 
   return (
     <div className="user-gallery">
+      <h1 className="heading">Joke of the Day</h1>
+      <h1 className="heading">{setup}</h1>
+      <h1 className="heading">{punchline}</h1>
       <h1 className="heading">Users</h1>
       <div className="items">
         {usersList.map((user, index) => (
