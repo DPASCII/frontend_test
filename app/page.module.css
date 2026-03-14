@@ -3,8 +3,9 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem;
+  padding: clamp(1rem, 1vw, 6rem);
   min-height: 100vh;
+
 }
 
 .description {

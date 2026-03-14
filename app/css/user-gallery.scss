@@ -7,9 +7,15 @@
     grid-template-rows: auto;
     grid-gap: 16px;
 
+    @media screen and (max-width: 834px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
     @media screen and (max-width: 480px) {
       grid-template-columns: 1fr;
     }
+
+    
   }
 
   > .heading + .items {
