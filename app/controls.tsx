@@ -9,11 +9,13 @@ type Option = {
 
 type ControlsProps = {
   onSort: (sort: { field: SortField; direction: SortDirection }) => void;
+  onSearch: (query: string) => void;
 };
 
-const Controls = ({ onSort }: ControlsProps) => {
+const Controls = ({ onSort, onSearch }: ControlsProps) => {
   const [sortField, setSortField] = useState<SingleValue<Option>>(null);
   const [sortDirection, setSortDirection] = useState<SingleValue<Option>>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fieldOptions: Option[] = [
     { label: "Name", value: "name" },
@@ -24,6 +26,12 @@ const Controls = ({ onSort }: ControlsProps) => {
     { label: "Ascending", value: "ascending" },
     { label: "Descending", value: "descending" },
   ];
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    onSearch(query);
+  };
 
   const handleFieldChange = (selected: SingleValue<Option>) => {
     setSortField(selected);
@@ -49,6 +57,19 @@ const Controls = ({ onSort }: ControlsProps) => {
 
   return (
     <div className="gallery-controls controls">
+      <div className="form-group group">
+        <label htmlFor="search" className="label">
+          Search
+        </label>
+        <input
+          type="text"
+          id="search"
+          className="input search-input"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search..."
+        />
+      </div>
       <div className="form-group group">
         <label htmlFor="sort-field" className="label">
           Sort Field

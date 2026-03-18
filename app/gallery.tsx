@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "boring-avatars";
 import {
   FaRegCircleXmark,
@@ -21,6 +21,31 @@ const Gallery = ({ users }: GalleryProps) => {
   const [usersList, setUsersList] = useState(users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const pageSize = 3;
+
+  const filteredUsers = usersList.filter((user) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(q) ||
+      user.company.name.toLowerCase().includes(q)
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const visibleUsers = filteredUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
 
   const handleModalOpen = (id: number) => {
     const user = usersList.find((item) => item.id === id) || null;
@@ -66,17 +91,26 @@ const Gallery = ({ users }: GalleryProps) => {
     setUsersList(sorted);
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="user-gallery">
       <div className="heading">
         <h1 className="title">Users</h1>
-        <Controls onSort={handleSort} />
+        <Controls onSort={handleSort} onSearch={handleSearch} />
       </div>
       <div className="items">
-        {usersList.map((user, index) => (
+        {visibleUsers.map((user) => (
           <div
             className="item user-card"
-            key={index}
+            key={user.id}
             onClick={() => handleModalOpen(user.id)}
           >
             <div className="body">
@@ -148,6 +182,40 @@ const Gallery = ({ users }: GalleryProps) => {
             </div>
           </div>
         </Modal>
+      </div>
+      <div className="gallery-controls pagination-controls controls">
+        <button
+          className="btn"
+          onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <div className="page-shortcuts">
+          {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+            (page) => (
+              <button
+                key={page}
+                className={`btn page-number ${page === currentPage ? "active" : ""}`}
+                onClick={() => setCurrentPage(page)}
+                aria-current={page === currentPage ? "page" : undefined}
+              >
+                {page}
+              </button>
+            ),
+          )}
+        </div>
+
+        <button
+          className="btn"
+          onClick={() =>
+            currentPage < totalPages && setCurrentPage(currentPage + 1)
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
